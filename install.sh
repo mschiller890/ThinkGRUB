@@ -16,9 +16,7 @@ TIMEOUT=${TIMEOUT:-5}
 echo "[1/4] Installing theme to $DEST"
 rm -rf "$DEST"
 mkdir -p "$DEST"
-cp "$SRC/theme.txt" "$SRC/panel.png" "$SRC/logo.png" "$DEST/"
-cp "$SRC"/sel_*.png "$SRC"/item_*.png "$SRC"/terminal_box_*.png "$DEST/"
-cp "$SRC"/DejaVuSans-*.pf2 "$DEST/"
+cp "$SRC"/theme/theme.txt "$SRC"/theme/*.png "$SRC"/theme/*.pf2 "$DEST/"
 
 echo "[2/4] Backing up $GRUB_FILE"
 [ -f "$GRUB_FILE.bak" ] || cp "$GRUB_FILE" "$GRUB_FILE.bak"

@@ -3,7 +3,7 @@
 A minimal black & white GRUB 2 theme: one centered, white-bordered box on a
 black background, a ThinkPad-style wordmark above it, and nothing else.
 
-![ThinkGRUB preview](preview.png)
+![ThinkGRUB preview](docs/preview.png)
 
 ## Features
 
@@ -24,7 +24,7 @@ pkexec ./install.sh        # or: sudo ./install.sh
 
 The installer:
 
-1. copies the theme to `/boot/grub/themes/thinkgrub`
+1. copies `theme/` to `/boot/grub/themes/thinkgrub`
 2. backs up `/etc/default/grub` to `/etc/default/grub.bak` (first run only)
 3. sets `GRUB_THEME`, `GRUB_TIMEOUT=5`, `GRUB_TIMEOUT_STYLE=menu`
 4. runs `update-grub`
@@ -46,7 +46,24 @@ Clears `GRUB_THEME`, removes the theme directory and regenerates `grub.cfg`.
   - `python3` + `python3-pil`
   - `grub-mkfont` (from `grub-common`)
   - `python3-gi` and the librsvg GdkPixbuf loader (`librsvg2-common`) for
-    rendering `logo.svg`
+    rendering `src/logo.svg`
+
+## Repository layout
+
+```
+.
+├── theme/          installable theme (theme.txt, PNGs, .pf2 fonts)
+├── src/            hand-written sources (logo.svg)
+├── docs/           generated documentation assets (preview.png)
+├── build.py        regenerates everything in theme/ and docs/
+├── install.sh      copy theme/ into /boot/grub/themes and configure GRUB
+├── uninstall.sh    remove the theme and regenerate grub.cfg
+├── README.md
+└── LICENSE
+```
+
+`theme/` is self-contained: you can also copy it by hand to
+`/boot/grub/themes/thinkgrub` and point `GRUB_THEME` at its `theme.txt`.
 
 ## Rebuild / customize
 
@@ -54,8 +71,8 @@ Clears `GRUB_THEME`, removes the theme directory and regenerates `grub.cfg`.
 python3 build.py
 ```
 
-This regenerates `theme.txt`, all PNGs, the `.pf2` fonts and `preview.png`.
-The layout constants are at the top of `build.py`:
+This regenerates `theme/theme.txt`, all theme PNGs, the `.pf2` fonts and
+`docs/preview.png`. The layout constants are at the top of `build.py`:
 
 | Constant | Meaning |
 |---|---|
@@ -88,10 +105,10 @@ it does:
 
 - The theme is designed for a menu with up to four entries; more entries still
   work (the list scrolls), but the box shows four at a time.
-- The ThinkPad wordmark (`logo.svg`) is a trademark of Lenovo. It is included
-  as fan art and is **not** covered by this project's license. Replace it with
-  your own logo, or delete the logo component from `theme.txt`, if you
-  redistribute the theme.
+- The ThinkPad wordmark (`src/logo.svg`) is a trademark of Lenovo. It is
+  included as fan art and is **not** covered by this project's license.
+  Replace it with your own logo, or delete the logo component from
+  `theme/theme.txt`, if you redistribute the theme.
 
 ## License
 

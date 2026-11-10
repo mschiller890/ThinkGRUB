@@ -14,6 +14,13 @@ from gi.repository import GdkPixbuf  # noqa: E402
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+SRC = os.path.join(HERE, "src")        # hand-written sources (logo.svg)
+THEME = os.path.join(HERE, "theme")    # generated, installable theme
+DOCS = os.path.join(HERE, "docs")      # generated documentation assets
+
+for _d in (THEME, DOCS):
+    os.makedirs(_d, exist_ok=True)
+
 FONT_TTF = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 
 WHITE = (255, 255, 255, 255)
@@ -38,7 +45,7 @@ def run(cmd):
 def pf2_metrics(size):
     """Return {ASCE, DESC} for a generated pf2 - the exact ascent/descent
     GRUB will use when drawing that font (big-endian section values)."""
-    d = open(os.path.join(HERE, f"DejaVuSans-{size}.pf2"), "rb").read()
+    d = open(os.path.join(THEME, f"DejaVuSans-{size}.pf2"), "rb").read()
     i, out = 0, {}
     while i + 8 <= len(d):
         name = d[i:i + 4]
@@ -69,7 +76,7 @@ def nine_slice(img, prefix):
 
     for name, box in tiles.items():
         img.crop(box).save(
-            os.path.join(HERE, f"{prefix}_{name}.png")
+            os.path.join(THEME, f"{prefix}_{name}.png")
         )
 
 
@@ -85,12 +92,12 @@ for s in SIZES:
     run([
         "grub-mkfont",
         "-s", str(s),
-        "-o", os.path.join(HERE, f"DejaVuSans-{s}.pf2"),
+        "-o", os.path.join(THEME, f"DejaVuSans-{s}.pf2"),
         FONT_TTF
     ])
 
 # drop stale fonts from previous builds
-for f in glob.glob(os.path.join(HERE, "*.pf2")):
+for f in glob.glob(os.path.join(THEME, "*.pf2")):
     if not any(f.endswith(f"DejaVuSans-{s}.pf2") for s in SIZES):
         os.remove(f)
 
@@ -124,7 +131,7 @@ d.rectangle(
     width=1
 )
 
-panel.save(os.path.join(HERE, "panel.png"))
+panel.save(os.path.join(THEME, "panel.png"))
 
 # --------------------------------------------------
 # 2b. Logo above the box
@@ -139,14 +146,14 @@ def render_logo():
     # librsvg renders the vectors at the requested size, so there is no
     # upscaling blur - only a high-quality LANCZOS downsample afterwards.
     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-        os.path.join(HERE, "logo.svg"),
+        os.path.join(SRC, "logo.svg"),
         LOGO_W * HIRES, LOGO_H * HIRES, True
     )
-    tmp = os.path.join(HERE, "logo_hires.png")
+    tmp = os.path.join(THEME, "logo_hires.png")
     pixbuf.savev(tmp, "png", [], [])
     Image.open(tmp).convert("RGBA").resize(
         (LOGO_W, LOGO_H), Image.LANCZOS
-    ).save(os.path.join(HERE, "logo.png"))
+    ).save(os.path.join(THEME, "logo.png"))
     os.remove(tmp)
 
 
@@ -203,7 +210,7 @@ for pattern in (
     "box_*.png",
     "old_panel*.png",
 ):
-    for f in glob.glob(os.path.join(HERE, pattern)):
+    for f in glob.glob(os.path.join(THEME, pattern)):
         os.remove(f)
 
 # --------------------------------------------------
@@ -310,7 +317,7 @@ terminal-font: "{FONT} 14"
 }}
 """
 
-with open(os.path.join(HERE, "theme.txt"), "w") as f:
+with open(os.path.join(THEME, "theme.txt"), "w") as f:
     f.write(theme)
 
 # --------------------------------------------------
@@ -351,7 +358,7 @@ d.rectangle(
 )
 
 # Logo above the box
-logo_img = Image.open(os.path.join(HERE, "logo.png")).convert("RGBA")
+logo_img = Image.open(os.path.join(THEME, "logo.png")).convert("RGBA")
 img.paste(
     logo_img,
     (bx + (BOX_W - LOGO_W) // 2, by - LOGO_GAP - LOGO_H),
@@ -430,10 +437,10 @@ d.text(
 )
 
 # Save preview
-preview = os.path.join(HERE, "preview.png")
+preview = os.path.join(DOCS, "preview.png")
 
 img.save(preview)
 
 print("Theme generated successfully.")
-print("Theme directory:", HERE)
-print("Preview:", os.path.abspath(preview))
+print("Theme directory:", THEME)
+print("Preview:", preview)
