@@ -54,7 +54,7 @@ Clears `GRUB_THEME`, removes the theme directory and regenerates `grub.cfg`.
 .
 ├── theme/          installable theme (theme.txt, PNGs, .pf2 fonts)
 ├── src/            hand-written sources (logo.svg)
-├── docs/           generated documentation assets (preview.png)
+├── docs/           generated documentation assets (preview.png, compare.png)
 ├── build.py        regenerates everything in theme/ and docs/
 ├── install.sh      copy theme/ into /boot/grub/themes and configure GRUB
 ├── uninstall.sh    remove the theme and regenerate grub.cfg
@@ -107,6 +107,16 @@ it does:
   ~36% to ~10% of strokes compared with DejaVu's native hinting at these
   sizes. `docs/preview.png` is rendered from the same `.pf2` bitmaps, so it
   shows exactly what the boot screen shows.
+
+## Font rendering
+
+![Font rasterization comparison](docs/compare.png)
+
+GRUB's bootloader renderer is 1-bit only, so "antialiasing" is impossible and
+the rasterizer chosen at build time decides how clean the text looks. The
+chart above is generated from the actual `.pf2` bitmaps; `build.py` uses
+`--force-autohint` (variant B), which cuts thin 1px stems from 36.2% to 9.9%
+of strokes.
 
 ## Notes
 
