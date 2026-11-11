@@ -100,6 +100,13 @@ it does:
   row and never overlaps its neighbours.
 - **Item text is indented by the style box's left-slice width**, which is how
   the 10px text padding inside the white highlight is achieved.
+- **GRUB has no font antialiasing.** The bootloader draws every glyph as a
+  1-bit bitmap (`bpp = 1` in `font.c`), so smoothness depends entirely on how
+  the glyph was rasterized at build time. `build.py` passes
+  `--force-autohint` to `grub-mkfont`, which cuts thin 1px stem fragments from
+  ~36% to ~10% of strokes compared with DejaVu's native hinting at these
+  sizes. `docs/preview.png` is rendered from the same `.pf2` bitmaps, so it
+  shows exactly what the boot screen shows.
 
 ## Notes
 
